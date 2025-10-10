@@ -1585,6 +1585,8 @@ lenout:
  */
 static inline void sock_lock_init(struct sock *sk)
 {
+	sk_owner_clear(sk);
+
 #ifdef CONFIG_MPTCP
 	/* Reclassify the lock-class for subflows */
 	if (sk->sk_type == SOCK_STREAM && sk->sk_protocol == IPPROTO_TCP)
@@ -1695,6 +1697,8 @@ static void sk_prot_free(struct proto *prot, struct sock *sk)
 	mem_cgroup_sk_free(sk);
 	security_sk_free(sk);
 	trace_android_rvh_sk_free(sk);
+	sk_owner_put(sk);
+
 	if (slab != NULL)
 		kmem_cache_free(slab, sk);
 	else
